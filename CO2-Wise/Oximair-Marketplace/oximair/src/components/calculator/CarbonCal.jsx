@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { useForm } from "react-hook-form";
 import {
   Flame,
   Truck,
@@ -81,26 +80,64 @@ const emissionFactors = {
 
 export default function CarbonCal() {
   const [step, setStep] = useState(0);
+  const [inputs, setInputs] = useState({
+    extraction: "",
+    transport: "",
+    machinery: "",
+    power: "",
+    thermal: "",
+    airImpact: "",
+  });
   const [totalEmissions, setTotalEmissions] = useState(0);
+  const [errors, setErrors] = useState({});
 
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm();
-
-  const onSubmit = (data) => {
-    const total = Object.entries(data).reduce((sum, [key, value]) => {
-      return sum + (parseFloat(value) || 0) * (emissionFactors[key] || 0);
-    }, 0);
-    setTotalEmissions(total);
-    setStep(factors.length);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setInputs((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleNext = () =>
-    setStep((prev) => Math.min(prev + 1, factors.length));
+  const handleNext = () => {
+    const currentFactor = factors[step].name;
+    const value = parseFloat(inputs[currentFactor]);
+    if (isNaN(value) || value < 0) {
+      setErrors((prev) => ({ ...prev, [currentFactor]: true }));
+    } else {
+      setErrors((prev) => ({ ...prev, [currentFactor]: false }));
+      setStep((prev) => Math.min(prev + 1, factors.length));
+    }
+  };
+
   const handleBack = () => setStep((prev) => Math.max(prev - 1, 0));
+
+  const handleCalculate = () => {
+    let total = 0;
+
+    for (let factor of factors) {
+      const input = parseFloat(inputs[factor.name]);
+      const emissionFactor = emissionFactors[factor.name];
+
+      if (!isNaN(input) && input >= 0) {
+        total += input * emissionFactor;
+      }
+    }
+
+    setTotalEmissions(total);
+    setStep(factors.length); // go to summary page
+  };
+
+  const handleRestart = () => {
+    setInputs({
+      extraction: "",
+      transport: "",
+      machinery: "",
+      power: "",
+      thermal: "",
+      airImpact: "",
+    });
+    setTotalEmissions(0);
+    setStep(0);
+    setErrors({});
+  };
 
   return (
     <div className="min-h-screen bg-white flex flex-col md:flex-row text-gray-900">
@@ -112,7 +149,6 @@ export default function CarbonCal() {
           </h1>
           <p className="text-gray-100 mb-6 text-sm">
             Track your carbon emissions across multiple industrial factors.
-            Enter your input to estimate your footprint.
           </p>
           <ul className="space-y-3 text-sm">
             {factors.map((factor, i) => (
@@ -128,7 +164,6 @@ export default function CarbonCal() {
             ))}
           </ul>
         </div>
-
         <div className="text-xs text-gray-100 mt-6">© 2025 EcoTrace</div>
       </aside>
 
@@ -136,115 +171,106 @@ export default function CarbonCal() {
       <main className="flex-1 p-6 flex justify-center items-center bg-zinc-200">
         <Card className="w-full max-w-2xl bg-zinc-300 border-none shadow-lg rounded-xl">
           <CardContent className="p-8">
-            <form onSubmit={handleSubmit(onSubmit)}>
-              {step < factors.length ? (
-                <>
-                  <div className="text-center mb-6">
-                    {(() => {
-                      const Icon = factors[step].icon;
-                      return (
-                        <Icon size={40} className="mx-auto text-green-500" />
-                      );
-                    })()}
-                    <h2 className="text-xl font-semibold mt-2 text-gray-900">
-                      {factors[step].label}
-                    </h2>
-                  </div>
-                  <Label
-                    htmlFor={factors[step].name}
-                    className="flex items-center text-gray-900 mb-2"
-                  >
-                    <span>
-                      Enter {factors[step].label} ({factors[step].unit})
-                    </span>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <HelpCircle className="ml-2 h-4 w-4 text-gray-500" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>{factors[step].tooltip}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </Label>
-                  <Input
-                    id={factors[step].name}
-                    type="number"
-                    {...register(factors[step].name, {
-                      required: true,
-                      min: 0,
-                    })}
-                    className="mb-4 bg-gray-100 text-gray-900 border-green-300 placeholder:text-gray-400"
-                    placeholder={`Enter value in ${factors[step].unit}`}
-                  />
-                  {errors[factors[step].name] && (
-                    <p className="text-red-400 text-sm mb-4">
-                      This field is required and must be a non-negative number.
-                    </p>
-                  )}
-
-                  <div className="flex justify-between mt-6">
-                    <Button
-                      type="button"
-                      onClick={handleBack}
-                      disabled={step === 0}
-                      className="bg-gray-300 hover:bg-gray-400 text-gray-800"
-                    >
-                      <ChevronLeft className="mr-1" /> Back
-                    </Button>
-                    <Button
-                      type="button"
-                      onClick={handleNext}
-                      className="bg-green-600 hover:bg-green-700 text-white"
-                    >
-                      Next <ChevronRight className="ml-1" />
-                    </Button>
-                  </div>
-                </>
-              ) : (
-                <div className="text-center text-gray-900 space-y-6">
-                  <BarChart3 size={48} className="mx-auto text-green-500" />
-                  <h2 className="text-2xl font-bold">Summary</h2>
-                  <div className="grid grid-cols-2 gap-4 text-sm text-left">
-                    {factors.map((f) => (
-                      <div key={f.name} className="flex justify-between">
-                        <span>{f.label}</span>
-                        <span>
-                          {watch(f.name) || 0} {f.unit}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="text-xl font-semibold text-green-500 mt-4">
-                    Total CO₂ Emissions: {totalEmissions.toFixed(2)} kg CO₂e
-                  </div>
+            {step < factors.length ? (
+              <>
+                <div className="text-center mb-6">
+                  {(() => {
+                    const Icon = factors[step].icon;
+                    return (
+                      <Icon size={40} className="mx-auto text-green-500" />
+                    );
+                  })()}
+                  <h2 className="text-xl font-semibold mt-2 text-gray-900">
+                    {factors[step].label}
+                  </h2>
                 </div>
-              )}
 
-              {step === factors.length && (
-                <div className="mt-6">
+                <Label
+                  htmlFor={factors[step].name}
+                  className="text-gray-900 mb-2 flex items-center"
+                >
+                  Enter {factors[step].label} ({factors[step].unit})
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <HelpCircle className="ml-2 h-4 w-4 text-gray-500" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>{factors[step].tooltip}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </Label>
+
+                <Input
+                  id={factors[step].name}
+                  name={factors[step].name}
+                  type="number"
+                  value={inputs[factors[step].name]}
+                  onChange={handleChange}
+                  className="mb-4 bg-gray-100 text-gray-900 border-green-300 placeholder:text-gray-400"
+                  placeholder={`Enter value in ${factors[step].unit}`}
+                />
+                {errors[factors[step].name] && (
+                  <p className="text-red-400 text-sm mb-4">
+                    This field is required and must be a non-negative number.
+                  </p>
+                )}
+
+                <div className="flex justify-between mt-6">
                   <Button
                     type="button"
-                    onClick={() => setStep(0)}
-                    className="w-full bg-yellow-400 hover:bg-yellow-500 text-black"
+                    onClick={handleBack}
+                    disabled={step === 0}
+                    className="bg-gray-300 hover:bg-gray-400 text-gray-800"
                   >
-                    Restart Calculation
+                    <ChevronLeft className="mr-1" /> Back
                   </Button>
-                </div>
-              )}
-
-              {step === factors.length - 1 && (
-                <div className="mt-6">
                   <Button
-                    type="submit"
-                    className="w-full bg-green-600 hover:bg-green-700 text-white"
+                    type="button"
+                    onClick={handleNext}
+                    className="bg-green-600 hover:bg-green-700 text-white"
                   >
-                    Calculate Emissions
+                    Next <ChevronRight className="ml-1" />
                   </Button>
                 </div>
-              )}
-            </form>
+              </>
+            ) : (
+              <div className="text-center text-gray-900 space-y-6">
+                <BarChart3 size={48} className="mx-auto text-green-500" />
+                <h2 className="text-2xl font-bold">Summary</h2>
+                <div className="grid grid-cols-2 gap-4 text-sm text-left">
+                  {factors.map((f) => (
+                    <div key={f.name} className="flex justify-between">
+                      <span>{f.label}</span>
+                      <span>
+                        {inputs[f.name] || 0} {f.unit}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <div className="text-xl font-semibold text-green-500 mt-4">
+                  Total CO₂ Emissions: {totalEmissions.toFixed(2)} kg CO₂e
+                </div>
+                <Button
+                  onClick={handleRestart}
+                  className="mt-4 w-full bg-yellow-400 hover:bg-yellow-500 text-black"
+                >
+                  Restart Calculation
+                </Button>
+              </div>
+            )}
+
+            {step === factors.length - 1 && (
+              <div className="mt-6">
+                <Button
+                  onClick={handleCalculate}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white"
+                >
+                  Calculate Emissions
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
       </main>
