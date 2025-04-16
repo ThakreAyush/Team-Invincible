@@ -64,7 +64,7 @@ const Home = ({ connectWallet }) => {
       </section>
 
       {/* Map Section */}
-      <section className="py-16">
+      {/* <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-800">Live Climate Impact Map</h2>
@@ -111,7 +111,7 @@ const Home = ({ connectWallet }) => {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* How It Works */}
       <section className="py-16 bg-green-50">
