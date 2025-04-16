@@ -2,80 +2,87 @@
 
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Button } from "./ui/button";
+import {
+  Flame,
+  Truck,
+  Wrench,
+  BatteryCharging,
+  Sun,
+  Wind,
+  HelpCircle,
+  ChevronLeft,
+  ChevronRight,
+  BarChart3,
+} from "lucide-react";
 import { Card, CardContent } from "./ui/card";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
+import { Button } from "./ui/button";
 import {
   Tooltip,
+  TooltipTrigger,
   TooltipContent,
   TooltipProvider,
-  TooltipTrigger,
 } from "./ui/tooltip";
-import {
-  Shovel,
-  Truck,
-  HardHat,
-  Zap,
-  Thermometer,
-  Wind,
-  Plus,
-  HelpCircle,
-} from "lucide-react";
 
 const factors = [
   {
-    name: "excavation",
-    icon: Shovel,
+    name: "extraction",
+    label: "Fuel Extraction",
     unit: "tons",
-    tooltip: "Amount of coal excavated",
+    tooltip: "Amount of fossil fuel extracted",
+    icon: Flame,
   },
   {
-    name: "transportation",
-    icon: Truck,
+    name: "transport",
+    label: "Logistics",
     unit: "km",
-    tooltip: "Distance traveled for coal transportation",
+    tooltip: "Distance traveled by transport vehicles",
+    icon: Truck,
   },
   {
-    name: "equipment",
-    icon: HardHat,
+    name: "machinery",
+    label: "Machinery Usage",
     unit: "hours",
-    tooltip: "Hours of equipment operation",
+    tooltip: "Machinery operation duration",
+    icon: Wrench,
   },
   {
-    name: "electricity",
-    icon: Zap,
+    name: "power",
+    label: "Electric Power",
     unit: "kWh",
-    tooltip: "Electricity consumed in operations",
+    tooltip: "Electricity consumption",
+    icon: BatteryCharging,
   },
   {
-    name: "heat",
-    icon: Thermometer,
+    name: "thermal",
+    label: "Thermal Energy",
     unit: "BTU",
-    tooltip: "Heat energy used in processes",
+    tooltip: "Thermal energy used",
+    icon: Sun,
   },
-  { name: "air", icon: Wind, unit: "m³", tooltip: "Air quality impact" },
   {
-    name: "other",
-    icon: Plus,
-    unit: "kg CO2e",
-    tooltip: "Other sources of emissions",
+    name: "airImpact",
+    label: "Air Impact",
+    unit: "m³",
+    tooltip: "Volume of air affected",
+    icon: Wind,
   },
 ];
 
 const emissionFactors = {
-  excavation: 0.8,
-  transportation: 0.1,
-  equipment: 2.5,
-  electricity: 0.5,
-  heat: 0.0001,
-  air: 0.02,
-  other: 1,
+  extraction: 0.9,
+  transport: 0.08,
+  machinery: 2.2,
+  power: 0.4,
+  thermal: 0.0002,
+  airImpact: 0.03,
 };
 
 export default function CarbonCal() {
-  const [currentStep, setCurrentStep] = useState(0);
+  const [step, setStep] = useState(0);
   const [totalEmissions, setTotalEmissions] = useState(0);
+
   const {
     register,
     handleSubmit,
@@ -84,153 +91,161 @@ export default function CarbonCal() {
   } = useForm();
 
   const onSubmit = (data) => {
-    const total = Object.entries(data).reduce((sum, [factor, value]) => {
-      return sum + (parseFloat(value) || 0) * emissionFactors[factor];
+    const total = Object.entries(data).reduce((sum, [key, value]) => {
+      return sum + (parseFloat(value) || 0) * (emissionFactors[key] || 0);
     }, 0);
     setTotalEmissions(total);
-    setCurrentStep(factors.length);
+    setStep(factors.length);
   };
 
   const handleNext = () =>
-    setCurrentStep((prev) => Math.min(prev + 1, factors.length - 1));
-  const handlePrev = () => setCurrentStep((prev) => Math.max(prev - 1, 0));
+    setStep((prev) => Math.min(prev + 1, factors.length));
+  const handleBack = () => setStep((prev) => Math.max(prev - 1, 0));
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white p-8 flex items-center justify-center">
-      <Card className="w-full h-full max-w-4xl bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg border border-zinc-700 border-opacity-20 shadow-xl">
-        <CardContent className="h-full p-6">
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-2xl font-bold text-white">Vayuno Calculator</h2>
-            <div className="relative w-14 h-14 rounded-full bg-zinc-800">
-              <div className="absolute text-white inset-0 flex items-center justify-center text-lg font-semibold">
-                {currentStep + 1}/{factors.length}
-              </div>
-            </div>
-          </div>
+    <div className="min-h-screen bg-[#0C0F14] flex flex-col md:flex-row text-white">
+      {/* Sidebar */}
+      <aside className="bg-[#191C24] p-6 w-full md:w-1/3 flex flex-col justify-between">
+        <div>
+          <h1 className="text-2xl font-bold mb-4">EcoTrace Calculator</h1>
+          <p className="text-gray-400 mb-6 text-sm">
+            Track your carbon emissions across multiple industrial factors.
+            Enter your input to estimate your footprint.
+          </p>
+          <ul className="space-y-3 text-sm">
+            {factors.map((factor, i) => (
+              <li
+                key={factor.name}
+                className={`flex items-center gap-2 p-2 rounded-md ${
+                  step === i ? "bg-[#2F3240]" : "bg-transparent"
+                }`}
+              >
+                <factor.icon size={18} className="text-white" />
+                <span>{factor.label}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
 
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <div
-              className="relative overflow-hidden"
-              style={{ height: "300px" }}
-            >
-              {factors.map((factor, index) => (
-                <div
-                  key={factor.name}
-                  className="absolute top-0 left-0 w-full transition-all duration-500 ease-in-out"
-                  style={{
-                    transform: `translateX(${(index - currentStep) * 100}%)`,
-                    opacity: index === currentStep ? 1 : 0,
-                  }}
-                >
-                  <div className="flex flex-col items-center space-y-4">
-                    <factor.icon size={48} className="text-white" />
-                    <h3 className="text-xl text-white font-semibold capitalize">
-                      {factor.name}
-                    </h3>
-                    <div className="w-full max-w-md">
-                      <Label
-                        htmlFor={factor.name}
-                        className="flex text-white items-center space-x-2 mb-2"
-                      >
-                        <span>
-                          Enter {factor.name} ({factor.unit}):
-                        </span>
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger>
-                              <HelpCircle size={16} className="text-gray-400" />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>{factor.tooltip}</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      </Label>
-                      <Input
-                        id={factor.name}
-                        type="number"
-                        placeholder={`Enter value in ${factor.unit}`}
-                        {...register(factor.name, {
-                          required: true,
-                          min: 0,
-                        })}
-                        className="bg-white bg-opacity-10 border-gray-200 border-opacity-20 text-white placeholder-gray-400"
-                      />
-                      {errors[factor.name] && (
-                        <span className="text-red-400 text-sm mt-1">
-                          This field is required and must be non-negative
-                        </span>
-                      )}
-                    </div>
+        <div className="text-xs text-gray-500 mt-6">© 2025 EcoTrace</div>
+      </aside>
+
+      {/* Main Card */}
+      <main className="flex-1 p-6 flex justify-center items-center">
+        <Card className="w-full max-w-2xl bg-[#1C1F2A] border-none shadow-lg rounded-xl">
+          <CardContent className="p-8">
+            <form onSubmit={handleSubmit(onSubmit)}>
+              {step < factors.length ? (
+                <>
+                  <div className="text-center mb-6">
+                    {(() => {
+                      const Icon = factors[step].icon;
+                      return (
+                        <Icon size={40} className="mx-auto text-blue-400" />
+                      );
+                    })()}
+                    <h2 className="text-xl font-semibold mt-2">
+                      {factors[step].label}
+                    </h2>
                   </div>
-                </div>
-              ))}
+                  <Label
+                    htmlFor={factors[step].name}
+                    className="flex items-center text-white mb-2"
+                  >
+                    <span>
+                      Enter {factors[step].label} ({factors[step].unit})
+                    </span>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <HelpCircle className="ml-2 h-4 w-4 text-gray-400" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>{factors[step].tooltip}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </Label>
+                  <Input
+                    id={factors[step].name}
+                    type="number"
+                    {...register(factors[step].name, {
+                      required: true,
+                      min: 0,
+                    })}
+                    className="mb-4 bg-white/10 text-white border-white/20 placeholder:text-gray-400"
+                    placeholder={`Enter value in ${factors[step].unit}`}
+                  />
+                  {errors[factors[step].name] && (
+                    <p className="text-red-400 text-sm mb-4">
+                      This field is required and must be a non-negative number.
+                    </p>
+                  )}
 
-              {currentStep === factors.length && (
-                <div className="absolute h-full text-white top-0 left-0 w-full">
-                  <h3 className="text-xl font-semibold text-center mb-4">
-                    Carbon Footprint Summary
-                  </h3>
-                  <div className="grid grid-cols-2 gap-4 mb-6">
-                    {factors.map((factor) => (
-                      <div
-                        key={factor.name}
-                        className="flex justify-between items-center"
-                      >
-                        <span className="capitalize">{factor.name}:</span>
+                  <div className="flex justify-between mt-6">
+                    <Button
+                      type="button"
+                      onClick={handleBack}
+                      disabled={step === 0}
+                      className="bg-gray-700 hover:bg-gray-600"
+                    >
+                      <ChevronLeft className="mr-1" /> Back
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={handleNext}
+                      className="bg-blue-600 hover:bg-blue-700"
+                    >
+                      Next <ChevronRight className="ml-1" />
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <div className="text-center text-white space-y-6">
+                  <BarChart3 size={48} className="mx-auto text-green-400" />
+                  <h2 className="text-2xl font-bold">Summary</h2>
+                  <div className="grid grid-cols-2 gap-4 text-sm text-left">
+                    {factors.map((f) => (
+                      <div key={f.name} className="flex justify-between">
+                        <span>{f.label}</span>
                         <span>
-                          {watch(factor.name) || "0"} {factor.unit}
+                          {watch(f.name) || 0} {f.unit}
                         </span>
                       </div>
                     ))}
                   </div>
-                  <div className="text-3xl font-bold text-center text-white">
-                    Total Emissions: {totalEmissions.toFixed(2)} kg CO2e
-                  </div>
-                  <div className="mt-8 flex justify-center">
-                    <div className="relative w-64 h-64">
-                      <div className="absolute inset-0 flex items-center justify-center text-lg font-semibold">
-                        {Math.min((totalEmissions / 1000) * 100, 100).toFixed(
-                          1
-                        )}
-                        % of 1000 kg CO2e
-                      </div>
-                    </div>
+                  <div className="text-xl font-semibold text-green-400 mt-4">
+                    Total CO₂ Emissions: {totalEmissions.toFixed(2)} kg CO₂e
                   </div>
                 </div>
               )}
-            </div>
 
-            <div className="flex justify-between mt-8">
-              <Button
-                type="button"
-                onClick={handlePrev}
-                disabled={currentStep === 0}
-                variant="outline"
-                className="bg-white bg-opacity-10 text-white border-gray-200 border-opacity-20 hover:bg-white hover:bg-opacity-20"
-              >
-                Previous
-              </Button>
-              {currentStep < factors.length - 1 ? (
-                <Button
-                  type="button"
-                  onClick={handleNext}
-                  className="bg-white text-black hover:bg-gray-200"
-                >
-                  Next
-                </Button>
-              ) : (
-                <Button
-                  type="submit"
-                  className="bg-white text-black hover:bg-gray-200"
-                >
-                  Calculate
-                </Button>
+              {step === factors.length && (
+                <div className="mt-6">
+                  <Button
+                    type="button"
+                    onClick={() => setStep(0)}
+                    className="w-full bg-yellow-500 hover:bg-yellow-600 text-black"
+                  >
+                    Restart Calculation
+                  </Button>
+                </div>
               )}
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+
+              {step === factors.length - 1 && (
+                <div className="mt-6">
+                  <Button
+                    type="submit"
+                    className="w-full bg-green-500 hover:bg-green-600"
+                  >
+                    Calculate Emissions
+                  </Button>
+                </div>
+              )}
+            </form>
+          </CardContent>
+        </Card>
+      </main>
     </div>
   );
 }
