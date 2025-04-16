@@ -7,13 +7,9 @@ import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import Marketplace from "./pages/Marketplace";
 import CarbonCal from "./components/calculator/CarbonCal";
-// import SellTokens from "./pages/SellTokens"
-// import Portfolio from "./pages/Portfolio"
-// import GovernmentPortal from "./pages/GovernmentPortal"
-import About from "./components/About"
-// import Analytics from "./pages/Analytics"
-// import News from "./pages/News"
-
+import About from "./components/About";
+import Login from "./pages/Login";
+import SignUp from "./pages/SignUp";
 function App() {
   const [isWalletConnected, setIsWalletConnected] = useState(false);
   const [walletAddress, setWalletAddress] = useState("");
@@ -28,6 +24,7 @@ function App() {
     setIsWalletConnected(false);
     setWalletAddress("");
   };
+  const [isLogin, setIsLogin] = useState(false);
 
   return (
     <Router>
@@ -39,23 +36,29 @@ function App() {
           disconnectWallet={disconnectWallet}
         />
         <main className="flex-grow">
-          <Routes>
-            <Route path="/" element={<Home connectWallet={connectWallet} />} />
-            <Route
-              path="/marketplace"
-              element={<Marketplace isWalletConnected={isWalletConnected} />}
-            />
-            <Route
-              path="/CarbonCal"
-              element={<CarbonCal isWalletConnected={isWalletConnected} />}
-            />
-            {/* <Route path="/sell" element={<SellTokens isWalletConnected={isWalletConnected} />} />
-            <Route path="/portfolio" element={<Portfolio isWalletConnected={isWalletConnected} />} />
-            <Route path="/government" element={<GovernmentPortal />} /> */}
-            <Route path="/about" element={<About />} />
-            {/* <Route path="/analytics" element={<Analytics isWalletConnected={isWalletConnected} />} /> */}
-            {/* <Route path="/news" element={<News />} /> */}
-          </Routes>
+          {isLogin ? (
+            <Routes>
+              <Route
+                path="/"
+                element={<Home connectWallet={connectWallet} />}
+              />
+              <Route
+                path="/marketplace"
+                element={<Marketplace isWalletConnected={isWalletConnected} />}
+              />
+              <Route
+                path="/CarbonCal"
+                element={<CarbonCal isWalletConnected={isWalletConnected} />}
+              />
+
+              <Route path="/about" element={<About />} />
+            </Routes>
+          ) : (
+            <Routes>
+              <Route path="/" element={<Login />} />
+              <Route path="/sign-up" element={<SignUp />} />
+            </Routes>
+          )}
         </main>
         <Footer />
       </div>
