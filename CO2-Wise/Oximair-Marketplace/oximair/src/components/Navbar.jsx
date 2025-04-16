@@ -49,8 +49,8 @@ const Navbar = ({ isWalletConnected, walletAddress, connectWallet, disconnectWal
     { name: "Sell Tokens", path: "/sell" },
     { name: "My Portfolio", path: "/portfolio" },
     { name: "Analytics", path: "/analytics" },
-    { name: "News", path: "/news" },
     { name: "Government Portal", path: "/government" },
+    { name: "CarbonCal", path: "/CarbonCal" },
     { name: "About", path: "/about" },
   ]
 
