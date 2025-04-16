@@ -6,6 +6,8 @@ import Home from "./pages/Home";
 import Marketplace from "./pages/Marketplace";
 import CarbonCal from "./components/calculator/CarbonCal";
 import About from "./components/About";
+// import Dashboard from "./pages/Dashboard";
+// import Governmentportal from "./pages/Governmentportal";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -70,6 +72,22 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
+                {/* <Route
+                  path="/dashboard"
+                  element={
+                    <ProtectedRoute isLoggedIn={isLoggedIn}>
+                      <Dashboard  isWalletConnected={isWalletConnected} />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/govenmentportal"
+                  element={
+                    <ProtectedRoute isLoggedIn={isLoggedIn}>
+                      <Governmentportal isWalletConnected={isWalletConnected} />
+                    </ProtectedRoute>
+                  }
+                /> */}
                 <Route
                   path="/carboncal"
                   element={
