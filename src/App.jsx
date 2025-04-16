@@ -13,10 +13,6 @@ import ProtectedRoute from "./components/ProtectedRoute";
 function App() {
   const [isWalletConnected, setIsWalletConnected] = useState(false);
   const [walletAddress, setWalletAddress] = useState("");
-<<<<<<< HEAD
-=======
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
->>>>>>> 37cbceb6492cd4ce1a54fdb38c2d818f8df9d76c
 
   const connectWallet = () => {
     setIsWalletConnected(true);
@@ -28,7 +24,6 @@ function App() {
     setWalletAddress("");
   };
 
-<<<<<<< HEAD
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const AuthFinder = async () => {
     const dataAuth = await localStorage.getItem("userData");
@@ -43,12 +38,6 @@ function App() {
   useEffect(() => {
     AuthFinder();
   }, [isLoggedIn]);
-=======
-  // useEffect(() => {
-  //   localStorage.setItem("isLoggedIn", isLoggedIn);
-  // }, [isLoggedIn]);
-
->>>>>>> 37cbceb6492cd4ce1a54fdb38c2d818f8df9d76c
   return (
     <Router>
       <div className="flex flex-col min-h-screen bg-gray-50">
