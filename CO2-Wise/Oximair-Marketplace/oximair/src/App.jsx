@@ -15,7 +15,6 @@ import ProtectedRoute from "./components/ProtectedRoute";
 function App() {
   const [isWalletConnected, setIsWalletConnected] = useState(false);
   const [walletAddress, setWalletAddress] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
 
   const connectWallet = () => {
     setIsWalletConnected(true);
@@ -27,10 +26,20 @@ function App() {
     setWalletAddress("");
   };
 
-  // useEffect(() => {
-  //   localStorage.setItem("isLoggedIn", isLoggedIn);
-  // }, [isLoggedIn]);
-
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const AuthFinder = async () => {
+    const dataAuth = await localStorage.getItem("userData");
+    const userData = JSON.parse(dataAuth);
+    if (userData) {
+      setIsLoggedIn(true);
+      setWalletAddress(userData.walletAddress);
+    } else {
+      setIsLoggedIn(false);
+    }
+  };
+  useEffect(() => {
+    AuthFinder();
+  }, [isLoggedIn]);
   return (
     <Router>
       <div className="flex flex-col min-h-screen bg-gray-50">
@@ -47,9 +56,15 @@ function App() {
             {/* Public Routes */}
             {!isLoggedIn && (
               <>
-                <Route path="/" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
+                <Route
+                  path="/Login"
+                  element={<Login setIsLoggedIn={setIsLoggedIn} />}
+                />
                 <Route path="/sign-up" element={<SignUp />} />
-                <Route path="*" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
+                <Route
+                  path="*"
+                  element={<Login setIsLoggedIn={setIsLoggedIn} />}
+                />
               </>
             )}
 
