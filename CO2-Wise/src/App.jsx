@@ -1,7 +1,8 @@
 import React from "react";
+import CarbonFootprintCalculator from "./components/calculator/CarbonFootprintCalculator";
 
 const App = () => {
-  return <div className=""></div>;
+  return <CarbonFootprintCalculator />;
 };
 
 export default App;
