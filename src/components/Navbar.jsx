@@ -46,10 +46,11 @@ const Navbar = ({ isWalletConnected, walletAddress, connectWallet, disconnectWal
   const navLinks = [
     { name: "Home", path: "/" },
     { name: "Marketplace", path: "/marketplace" },
-    { name: "Sell Tokens", path: "/sell" },
-    { name: "My Portfolio", path: "/portfolio" },
-    { name: "Analytics", path: "/analytics" },
-    { name: "Government Portal", path: "/government" },
+    // { name: "Sell Tokens", path: "/sell" },
+    // { name: "Dashboard", path: "/dashboard" },
+    // { name: "Government-portal", path: "/government-portal" },
+    // { name: "Analytics", path: "/analytics" },
+    // { name: "Government Portal", path: "/government" },
     { name: "CarbonCal", path: "/CarbonCal" },
     { name: "About", path: "/about" },
   ]
