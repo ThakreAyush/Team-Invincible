@@ -117,13 +117,13 @@ const Navbar = ({ isWalletConnected, walletAddress, connectWallet, disconnectWal
                       </div>
                     </div>
                     <a 
-                      href={`https://etherscan.io/address/${walletAddress}`} 
+                      href={`https://portfolio.metamask.io/?utm_source=www.google.com&_gl=1*1b08ugz*_gcl_au*NDk0MTU3MTA5LjE3NDQ3NDY0MTI./${walletAddress}`} 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
                     >
                       <ExternalLink className="h-4 w-4 mr-2" />
-                      View on Etherscan
+                      View on Metamask
                     </a>
                     <button 
                       onClick={disconnectWallet}
