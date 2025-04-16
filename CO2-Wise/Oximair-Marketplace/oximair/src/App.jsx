@@ -1,25 +1,21 @@
-"use client";
-
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import Marketplace from "./pages/Marketplace";
 import CarbonCal from "./components/calculator/CarbonCal";
-// import SellTokens from "./pages/SellTokens"
-// import Portfolio from "./pages/Portfolio"
-// import GovernmentPortal from "./pages/GovernmentPortal"
-// import About from "./pages/About"
-// import Analytics from "./pages/Analytics"
-// import News from "./pages/News"
+import About from "./components/About";
+import Login from "./pages/Login";
+import SignUp from "./pages/SignUp";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   const [isWalletConnected, setIsWalletConnected] = useState(false);
   const [walletAddress, setWalletAddress] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
 
   const connectWallet = () => {
-    // Simulate wallet connection
     setIsWalletConnected(true);
     setWalletAddress("0x71C7656EC7ab88b098defB751B7401B5f6d8976F");
   };
@@ -29,6 +25,10 @@ function App() {
     setWalletAddress("");
   };
 
+  // useEffect(() => {
+  //   localStorage.setItem("isLoggedIn", isLoggedIn);
+  // }, [isLoggedIn]);
+
   return (
     <Router>
       <div className="flex flex-col min-h-screen bg-gray-50">
@@ -37,24 +37,57 @@ function App() {
           walletAddress={walletAddress}
           connectWallet={connectWallet}
           disconnectWallet={disconnectWallet}
+          isLoggedIn={isLoggedIn}
+          setIsLoggedIn={setIsLoggedIn}
         />
         <main className="flex-grow">
           <Routes>
-            <Route path="/" element={<Home connectWallet={connectWallet} />} />
-            <Route
-              path="/marketplace"
-              element={<Marketplace isWalletConnected={isWalletConnected} />}
-            />
-            <Route
-              path="/CarbonCal"
-              element={<CarbonCal isWalletConnected={isWalletConnected} />}
-            />
-            {/* <Route path="/sell" element={<SellTokens isWalletConnected={isWalletConnected} />} />
-            <Route path="/portfolio" element={<Portfolio isWalletConnected={isWalletConnected} />} />
-            <Route path="/government" element={<GovernmentPortal />} /> */}
-            {/* <Route path="/about" element={<About />} /> */}
-            {/* <Route path="/analytics" element={<Analytics isWalletConnected={isWalletConnected} />} /> */}
-            {/* <Route path="/news" element={<News />} /> */}
+            {/* Public Routes */}
+            {!isLoggedIn && (
+              <>
+                <Route path="/" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
+                <Route path="/sign-up" element={<SignUp />} />
+                <Route path="*" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
+              </>
+            )}
+
+            {/* Protected Routes */}
+            {isLoggedIn && (
+              <>
+                <Route
+                  path="/"
+                  element={
+                    <ProtectedRoute isLoggedIn={isLoggedIn}>
+                      <Home connectWallet={connectWallet} />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/marketplace"
+                  element={
+                    <ProtectedRoute isLoggedIn={isLoggedIn}>
+                      <Marketplace isWalletConnected={isWalletConnected} />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/carboncal"
+                  element={
+                    <ProtectedRoute isLoggedIn={isLoggedIn}>
+                      <CarbonCal isWalletConnected={isWalletConnected} />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/about"
+                  element={
+                    <ProtectedRoute isLoggedIn={isLoggedIn}>
+                      <About />
+                    </ProtectedRoute>
+                  }
+                />
+              </>
+            )}
           </Routes>
         </main>
         <Footer />
