@@ -2,16 +2,16 @@
 
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Button } from "../../components/calculator/ui/button";
-import { Card, CardContent } from "../../components/calculator/ui/card";
-import { Input } from "../../components/calculator/ui/input";
-import { Label } from "../../components/calculator/ui/label";
+import { Button } from "./ui/button";
+import { Card, CardContent } from "./ui/card";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "../../components/calculator/ui/tooltip";
+} from "./ui/tooltip";
 import {
   Shovel,
   Truck,
@@ -73,7 +73,7 @@ const emissionFactors = {
   other: 1,
 };
 
-export default function CarbonFootprintCalculator() {
+export default function CarbonCal() {
   const [currentStep, setCurrentStep] = useState(0);
   const [totalEmissions, setTotalEmissions] = useState(0);
   const {
@@ -97,37 +97,11 @@ export default function CarbonFootprintCalculator() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white p-8 flex items-center justify-center">
-      <Card className="w-full h-full max-w-4xl bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg border border-gray-200 border-opacity-20 shadow-xl">
+      <Card className="w-full h-full max-w-4xl bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg border border-zinc-700 border-opacity-20 shadow-xl">
         <CardContent className="h-full p-6">
           <div className="flex justify-between items-center mb-8">
-            <h2 className="text-2xl font-bold text-white">
-              Coal Mining Carbon Footprint Calculator
-            </h2>
-            <div className="relative w-20 h-20">
-              <svg className="w-full h-full" viewBox="0 0 100 100">
-                <circle
-                  className="text-gray-700 opacity-20"
-                  strokeWidth="8"
-                  stroke="currentColor"
-                  fill="transparent"
-                  r="40"
-                  cx="50"
-                  cy="50"
-                />
-                <circle
-                  className="text-white"
-                  strokeWidth="8"
-                  stroke="currentColor"
-                  fill="transparent"
-                  r="40"
-                  cx="50"
-                  cy="50"
-                  strokeDasharray={`${
-                    (currentStep / (factors.length - 1)) * 251.2
-                  } 251.2`}
-                  transform="rotate(-90 50 50)"
-                />
-              </svg>
+            <h2 className="text-2xl font-bold text-white">Vayuno Calculator</h2>
+            <div className="relative w-14 h-14 rounded-full bg-zinc-800">
               <div className="absolute text-white inset-0 flex items-center justify-center text-lg font-semibold">
                 {currentStep + 1}/{factors.length}
               </div>
