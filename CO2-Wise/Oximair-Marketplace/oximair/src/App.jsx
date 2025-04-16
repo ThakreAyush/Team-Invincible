@@ -10,7 +10,7 @@ import CarbonCal from "./components/calculator/CarbonCal";
 // import SellTokens from "./pages/SellTokens"
 // import Portfolio from "./pages/Portfolio"
 // import GovernmentPortal from "./pages/GovernmentPortal"
-// import About from "./pages/About"
+import About from "./components/About"
 // import Analytics from "./pages/Analytics"
 // import News from "./pages/News"
 
@@ -52,7 +52,7 @@ function App() {
             {/* <Route path="/sell" element={<SellTokens isWalletConnected={isWalletConnected} />} />
             <Route path="/portfolio" element={<Portfolio isWalletConnected={isWalletConnected} />} />
             <Route path="/government" element={<GovernmentPortal />} /> */}
-            {/* <Route path="/about" element={<About />} /> */}
+            <Route path="/about" element={<About />} />
             {/* <Route path="/analytics" element={<Analytics isWalletConnected={isWalletConnected} />} /> */}
             {/* <Route path="/news" element={<News />} /> */}
           </Routes>
